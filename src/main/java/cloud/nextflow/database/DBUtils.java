@@ -19,19 +19,47 @@ import java.sql.SQLException;
 public class DBUtils {
     private MongoConnector mongoConnector;
     private SQLConnector sqlConnector;
-    private String type;
+    private int type = 0;
+
+    private int SQLCONNECTOR = 0;
+    private int MONGOCONNECTOR = 1;
 
     public DBUtils(SQLConnector connector) {
         this.sqlConnector = connector;
-        this.type = "SQLCONNECTOR";
+        this.type = SQLCONNECTOR;
     }
 
     public DBUtils(MongoConnector connector) {
         this.mongoConnector = connector;
-        this.type = "MONGOCONNECTOR";
+        this.type = MONGOCONNECTOR;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
+    }
+
+    // Example of insert method
+    public void insertExample(String username, String email) {
+        if (type == MONGOCONNECTOR) {
+            Document insertDocument = new Document()
+                    .append("username", username)
+                    .append("email", email);
+            mongoConnector.getCollection().insertOne(insertDocument);
+        } else if (type == SQLCONNECTOR) {
+            Connection connection = null;
+            PreparedStatement preparedStatement = null;
+
+            try {
+                connection = sqlConnector.getHikariCP().getConnection();
+
+                preparedStatement = connection.prepareStatement("INSERT INTO users VALUES (?, ?)");
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, email);
+
+                preparedStatement.executeUpdate();
+            } catch (SQLException exception) {
+                exception.printStackTrace();
+            }
+        }
     }
 }
