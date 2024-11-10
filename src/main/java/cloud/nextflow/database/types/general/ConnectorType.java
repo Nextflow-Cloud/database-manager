@@ -1,4 +1,4 @@
-package cloud.nextflow.database.types;
+package cloud.nextflow.database.types.general;
 
 public enum ConnectorType {
     SQL,
