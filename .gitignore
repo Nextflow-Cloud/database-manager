@@ -1,2 +1,4 @@
 .idea/
 target/
+*.env
+src/main/java/cloud/nextflow/database/test/*

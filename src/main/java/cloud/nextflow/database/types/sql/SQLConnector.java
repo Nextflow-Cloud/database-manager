@@ -3,6 +3,8 @@ package cloud.nextflow.database.types.sql;
 import cloud.nextflow.database.types.exceptions.DatabaseException;
 import cloud.nextflow.database.types.general.DBConnector;
 import cloud.nextflow.database.types.general.DatabaseType;
+import cloud.nextflow.database.types.sql.mysql.MariaDB;
+import cloud.nextflow.database.types.sql.mysql.MySQL;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -44,6 +46,27 @@ public class SQLConnector extends DBConnector {
         hikariConfig.setMaximumPoolSize(10);
         hikariConfig.setConnectionTestQuery("SELECT 1");
         hikariConfig.setDriverClassName("org.mariadb.jdbc.Driver");
+        hikariConfig.setJdbcUrl("jdbc:mariadb://" + type.host + ":" + type.port + "/" + type.database);
+        hikariConfig.addDataSourceProperty("user", type.user);
+        hikariConfig.addDataSourceProperty("password", type.password);
+        this.hikariCP = new HikariDataSource(hikariConfig);
+        if (!this.hikariCP.isClosed()) {
+            logger.info("Connected to MariaDB");
+        } else {
+            throw new DatabaseException("Failed to connect to MariaDB database. Are credentials correct?");
+        }
+        this.initialize();
+    }
+
+    public SQLConnector(MySQL type, Logger logger) throws DatabaseException {
+        super(logger);
+        databaseType = DatabaseType.MYSQL;
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setMinimumIdle(20);
+        hikariConfig.setMaximumPoolSize(10);
+        hikariConfig.setConnectionTestQuery("SELECT 1");
+        // fix this to reflect mysql jdbc driver
+        hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
         hikariConfig.setJdbcUrl("jdbc:mariadb://" + type.host + ":" + type.port + "/" + type.database);
         hikariConfig.addDataSourceProperty("user", type.user);
         hikariConfig.addDataSourceProperty("password", type.password);

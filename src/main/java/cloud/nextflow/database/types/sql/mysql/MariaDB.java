@@ -1,6 +1,7 @@
-package cloud.nextflow.database.types.sql;
+package cloud.nextflow.database.types.sql.mysql;
 
 import cloud.nextflow.database.types.exceptions.DatabaseConfigException;
+import cloud.nextflow.database.types.sql.SQLType;
 
 public class MariaDB implements SQLType {
     public String host;

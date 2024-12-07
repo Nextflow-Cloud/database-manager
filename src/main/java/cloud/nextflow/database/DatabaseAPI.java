@@ -5,7 +5,8 @@ import cloud.nextflow.database.types.mongo.MongoConnector;
 import cloud.nextflow.database.types.mongo.MongoDB;
 import cloud.nextflow.database.types.sql.H2;
 import cloud.nextflow.database.types.sql.SQLConnector;
-import cloud.nextflow.database.types.sql.MariaDB;
+import cloud.nextflow.database.types.sql.mysql.MariaDB;
+import cloud.nextflow.database.types.sql.mysql.MySQL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,17 @@ public class DatabaseAPI {
     }
 
     public static SQLConnector getHikariCP(MariaDB type, Logger logger) throws DatabaseException {
+        if (hikariCP.containsKey(type.database)) {
+            return hikariCP.get(type.database);
+        } else {
+            SQLConnector hikari = new SQLConnector(type, logger);
+            hikari.initialize();
+            hikariCP.put(type.database, hikari);
+            return hikari;
+        }
+    }
+
+    public static SQLConnector getHikariCP(MySQL type, Logger logger) throws DatabaseException {
         if (hikariCP.containsKey(type.database)) {
             return hikariCP.get(type.database);
         } else {
